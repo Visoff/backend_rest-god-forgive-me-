@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="add()">Add</button>
+    <ul>
+
+    </ul>
+    <script>
+        const ul = document.querySelector("ul")
+        let todos = []
+        window.todos = todos
+        fetch("/todos").then(response => response.json()).then(data => {
+            todos = data
+            data.forEach(t => render(t.name))
+        })
+        function render(name) {
+            const li = document.createElement("li")
+            li.textContent = name
+            ul.append(li)
+            const deleteButton = document.createElement("button")
+            deleteButton.textContent = "Delete"
+            li.append(deleteButton)
+            deleteButton.onclick = () => {
+                todos = todos.filter(t => t.name !== name)
+                fetch("/todos", {
+                    method: "POST",
+                    body: JSON.stringify(todos),
+                })
+                // axios
+            }
+        }
+        function add() {
+            const name = prompt("Enter name")
+            render(name)
+            todos.push({ name })
+            fetch("/todos", {
+                method: "POST",
+                body: JSON.stringify(todos),
+            })
+        }
+    </script>
+</body>
+</html>
